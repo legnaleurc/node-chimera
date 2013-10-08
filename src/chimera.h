@@ -1,26 +1,28 @@
 #ifndef CHIMERA_H
 #define CHIMERA_H
 
-#include <QtGui>
-#include <QtWebKit/QWebPage>
+#include <QtCore/QTimer>
+#include <QtCore/QMutex>
+#include <QtCore/QWaitCondition>
+#include <QtCore/QQueue>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkProxy>
 #include <QtWebKit/QWebFrame>
-#include <QTimer>
-#include <QNetworkAccessManager>
-#include <QWebHistoryItem>
-#include <QNetworkProxy>
-#include <iostream>
+#include <QtWebKit/QWebHistoryItem>
+#include <QtWebKit/QWebPage>
+
 #include "cookiejar.h"
 
 class WebPage : public QWebPage {
     Q_OBJECT
 public:
     WebPage(QObject *parent = 0);
-    
+
 public slots:
     bool shouldInterruptJavaScript();
     void sendEvent(const QString &type, const QVariant &arg1 = QVariant(), const QVariant &arg2 = QVariant());
     bool go(int delta);
-    
+
 protected:
     void javaScriptAlert(QWebFrame *originatingFrame, const QString &msg);
     void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
@@ -70,7 +72,7 @@ public:
 
     void wait();
     void execute();
-    
+
     void open(const QString &address);
     void exit(int code = 0);
 

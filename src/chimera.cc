@@ -1,5 +1,17 @@
 #include "chimera.h"
 
+#include <iostream>
+
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
+#include <QtGui/QApplication>
+#include <QtGui/QDesktopServices>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QPainter>
+#include <QtGui/QPrinter>
+
+#include "chimera.moc"
+
 WebPage::WebPage(QObject *parent)
     : QWebPage(parent)
 {
@@ -83,7 +95,7 @@ Chimera::Chimera(QObject *parent)
     palette.setBrush(QPalette::Base, Qt::transparent);
     m_page.setPalette(palette);
     m_page.setParent(this);
-    
+
     connect(m_page.mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(inject()));
     connect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(finish(bool)));
 

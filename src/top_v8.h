@@ -2,7 +2,7 @@
 #define TOPV8_H
 
 #include <node.h>
-#include <QString>
+#include <QtCore/QString>
 
 namespace top_v8 {
 

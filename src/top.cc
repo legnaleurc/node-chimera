@@ -2,7 +2,6 @@
 #include <node.h>
 
 #include "browser.h"
-#include "chimera.moc"
 
 using namespace v8;
 
@@ -16,11 +15,11 @@ Handle<Value> ProcessEvents(const Arguments& args) {
 
 void Initialize(Handle<Object> target) {
   Browser::Initialize(target);
-  
+
   int argc = 0;
   char** argv = NULL;
   app = new QApplication(argc, argv);
-  
+
   target->Set(String::NewSymbol("processEvents"),
       FunctionTemplate::New(ProcessEvents)->GetFunction());
 }

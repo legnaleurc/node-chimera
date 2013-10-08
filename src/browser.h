@@ -2,8 +2,8 @@
 #define BROWSER_H
 
 #include <node.h>
-#include <QApplication>
-#include <QTimer>
+#include <QtGui/QApplication>
+#include <QtCore/QTimer>
 #include "chimera.h"
 
 struct BWork {
