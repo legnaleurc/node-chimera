@@ -15,7 +15,7 @@ Handle<Value> ProcessEvents(const Arguments& args) {
 void Initialize(Handle<Object> target) {
   Browser::Initialize(target);
 
-  int argc = 0;
+  static int argc = 0;
   char** argv = NULL;
   app = new QApplication(argc, argv);
 
