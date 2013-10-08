@@ -1,4 +1,5 @@
 #include <node.h>
+#include <node_version.h>
 
 #include "browser.h"
 #include "top_v8.h"
@@ -55,7 +56,11 @@ void AsyncWork(uv_work_t* req) {
     work->errorResult = work->chimera->getError();
 }
 
+#if NODE_MINOR_VERSION >= 10
+void AsyncAfter(uv_work_t* req, int /*status*/) {
+#else
 void AsyncAfter(uv_work_t* req) {
+#endif
     HandleScope scope;
     BWork* work = static_cast<BWork*>(req->data);
 
