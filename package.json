@@ -16,8 +16,5 @@
   "repository": {
     "type": "git",
     "url": "http://github.com/deanmao/node-chimera.git"
-  },
-  "scripts": {
-    "postinstall": "node scripts/download_native_binary.js"
   }
 }
