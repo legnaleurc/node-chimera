@@ -84,11 +84,8 @@ void AsyncAfter(uv_work_t* req) {
         }
     }
 
-    uv_queue_work(uv_default_loop(), &work->request, AsyncWork, AsyncAfter);
-
-    // TODO: we need to figure out where to dispose the callback & free up work
-    // work->callback.Dispose();
-    // delete work;
+    work->callback.Dispose();
+    delete work;
 }
 
 Handle<Value> Browser::Cookies(const Arguments& args) {
