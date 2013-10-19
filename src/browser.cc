@@ -51,8 +51,6 @@ Handle<Value> Browser::New(const Arguments& args) {
 void AsyncWork(uv_work_t* req) {
     BWork* work = static_cast<BWork*>(req->data);
     work->chimera->wait();
-    work->result = work->chimera->getResult();
-    work->errorResult = work->chimera->getError();
 }
 
 void AsyncAfter(uv_work_t* req) {
@@ -71,6 +69,9 @@ void AsyncAfter(uv_work_t* req) {
             node::FatalException(try_catch);
         }
     } else {
+        work->result = work->chimera->getResult();
+        work->errorResult = work->chimera->getError();
+
         const unsigned argc = 2;
         Local<Value> argv[argc] = {
             Local<Value>::New(Null()),

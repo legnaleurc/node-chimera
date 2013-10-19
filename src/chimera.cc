@@ -257,11 +257,19 @@ int Chimera::returnValue() const
 
 QString Chimera::getResult()
 {
+    if (m_results.isEmpty()) {
+        // TODO may cause by Browser::Close
+        return "";
+    }
     return m_results.dequeue();
 }
 
 QString Chimera::getError()
 {
+    if (m_errors.isEmpty()) {
+        // TODO may cause by Browser::Close
+        return "";
+    }
     return m_errors.dequeue();
 }
 
