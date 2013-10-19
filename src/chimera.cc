@@ -171,9 +171,9 @@ void Chimera::setEmbedScript(const QString &jscode)
 
 void Chimera::callback(const QString &errorResult, const QString &result)
 {
+  QMutexLocker locker(&m_mutex);
   m_errors.enqueue(errorResult);
   m_results.enqueue(result);
-  m_mutex.unlock();
   m_loading.wakeAll();
 }
 
@@ -186,13 +186,15 @@ void Chimera::exit(int code)
 {
     m_page.triggerAction(QWebPage::Stop);
     m_returnValue = code;
+    QMutexLocker locker(&m_mutex);
+    m_loading.wakeAll();
+    locker.unlock();
     disconnect(&m_page, SIGNAL(loadFinished(bool)), this, SLOT(finish(bool)));
 }
 
 void Chimera::execute()
 {
     std::cout << "debug -- about to lock" << std::endl;
-    m_mutex.tryLock();
     std::cout << "debug -- about to evaluate" << std::endl;
     m_page.mainFrame()->evaluateJavaScript(m_script);
     std::cout << "debug -- done evaluating" << std::endl;
@@ -219,17 +221,13 @@ void Chimera::open(const QString &address)
 {
     m_page.triggerAction(QWebPage::Stop);
     m_loadStatus = "loading";
-    m_mutex.lock();
     m_page.mainFrame()->setUrl(QUrl(address));
 }
 
 void Chimera::wait()
 {
-  if (m_mutex.tryLock()) {
-    m_mutex.unlock();
-  } else {
+    QMutexLocker locker(&m_mutex);
     m_loading.wait(&m_mutex);
-  }
 }
 
 bool Chimera::capture(const QString &fileName)
@@ -271,11 +269,19 @@ int Chimera::returnValue() const
 
 QString Chimera::getResult()
 {
+    if (m_results.isEmpty()) {
+        // TODO may cause by Browser::Close
+        return "";
+    }
     return m_results.dequeue();
 }
 
 QString Chimera::getError()
 {
+    if (m_errors.isEmpty()) {
+        // TODO may cause by Browser::Close
+        return "";
+    }
     return m_errors.dequeue();
 }
 

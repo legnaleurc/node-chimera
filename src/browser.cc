@@ -13,10 +13,9 @@ Browser::Browser(QString userAgent, QString libraryCode, QString cookies, bool d
   libraryCode_ = libraryCode;
   cookies_ = cookies;
   disableImages_ = disableImages;
-  chimera_ = 0;
 }
+
 Browser::~Browser() {
-  delete chimera_;
 }
 
 void Browser::Initialize(Handle<Object> target) {
@@ -52,8 +51,6 @@ Handle<Value> Browser::New(const Arguments& args) {
 void AsyncWork(uv_work_t* req) {
     BWork* work = static_cast<BWork*>(req->data);
     work->chimera->wait();
-    work->result = work->chimera->getResult();
-    work->errorResult = work->chimera->getError();
 }
 
 #if NODE_MINOR_VERSION >= 10
@@ -76,6 +73,9 @@ void AsyncAfter(uv_work_t* req) {
             node::FatalException(try_catch);
         }
     } else {
+        work->result = work->chimera->getResult();
+        work->errorResult = work->chimera->getError();
+
         const unsigned argc = 2;
         Local<Value> argv[argc] = {
             Local<Value>::New(Null()),
@@ -89,11 +89,8 @@ void AsyncAfter(uv_work_t* req) {
         }
     }
 
-    uv_queue_work(uv_default_loop(), &work->request, AsyncWork, AsyncAfter);
-
-    // TODO: we need to figure out where to dispose the callback & free up work
-    // work->callback.Dispose();
-    // delete work;
+    work->callback.Dispose();
+    delete work;
 }
 
 Handle<Value> Browser::Cookies(const Arguments& args) {
@@ -173,10 +170,9 @@ Handle<Value> Browser::Close(const Arguments& args) {
   Browser* w = ObjectWrap::Unwrap<Browser>(args.This());
   Chimera* chimera = w->getChimera();
 
-  if (0 != chimera) {
+  if (NULL != chimera) {
     chimera->exit(1);
-    w->setChimera(0);
-    chimera->deleteLater();
+    w->setChimera(NULL);
   }
 
   return scope.Close(Undefined());
