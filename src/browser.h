@@ -1,6 +1,8 @@
 #ifndef BROWSER_H
 #define BROWSER_H
 
+#include <boost/tr1/memory.hpp>
+
 #include <node.h>
 #include <QApplication>
 #include <QTimer>
@@ -21,8 +23,8 @@ struct BWork {
 class Browser : public node::ObjectWrap {
  public:
   static void Initialize(v8::Handle<v8::Object> target);
-  Chimera* getChimera() const { return chimera_; };
-  void setChimera(Chimera *chimera) { chimera_ = chimera; };
+  Chimera* getChimera() const { return chimera_.get(); };
+  void setChimera(Chimera *chimera) { chimera_.reset(chimera); };
 
   QString userAgent() {return userAgent_; };
   QString libraryCode() {return libraryCode_; };
@@ -40,7 +42,7 @@ class Browser : public node::ObjectWrap {
   static v8::Handle<v8::Value> SetCookies(const v8::Arguments& args);
   static v8::Handle<v8::Value> SetProxy(const v8::Arguments& args);
 
-  Chimera* chimera_;
+  std::tr1::shared_ptr<Chimera> chimera_;
   QString libraryCode_;
   QString userAgent_;
   QString cookies_;

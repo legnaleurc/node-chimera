@@ -12,10 +12,9 @@ Browser::Browser(QString userAgent, QString libraryCode, QString cookies, bool d
   libraryCode_ = libraryCode;
   cookies_ = cookies;
   disableImages_ = disableImages;
-  chimera_ = 0;
 }
+
 Browser::~Browser() {
-  delete chimera_;
 }
 
 void Browser::Initialize(Handle<Object> target) {
@@ -165,11 +164,10 @@ Handle<Value> Browser::Close(const Arguments& args) {
   
   Browser* w = ObjectWrap::Unwrap<Browser>(args.This());
   Chimera* chimera = w->getChimera();
- 
-  if (0 != chimera) {
+
+  if (NULL != chimera) {
     chimera->exit(1);
-    w->setChimera(0);
-    chimera->deleteLater();
+    w->setChimera(NULL);
   }
  
   return scope.Close(Undefined());
